@@ -1,0 +1,17 @@
+name: Trigger every fifteen minutes
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+
+jobs:
+  trigger:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - name: Clone source
+        uses: actions/checkout@v1
+      - name: Keep heroku app running
+        run: |
+          curl --connect-timeout 15 -m 20 -sSL "${{ secrets.HEROKUAPP }}" > /dev/null 2>&1
+          exit $?

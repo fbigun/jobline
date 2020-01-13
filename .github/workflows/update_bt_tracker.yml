@@ -1,0 +1,23 @@
+name: Update aria2`s bt-tracker daily
+
+on:
+  schedule:
+    # utc 4:00 即北京时间12点钟每天运行
+    - cron: "0 4 * * *"
+
+jobs:
+  update-tracker:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - name: Clone source
+        uses: actions/checkout@v1
+      - name: update bt-tracker
+        run: |
+          servers=${{ secrets.ARIA2_SERVERS }}
+          server=(${servers//,/ })
+          path=${server[0]}
+          passwd=${server[1]}
+          tracker_url='https://github.com/ngosang/trackerslist/raw/master/trackers_best.txt'
+          tracker=$(echo -n  $(curl -s -L $tracker_url | sed 'N;s/\n//g') | tr ' ' ',')
+          [ -n "$tracker" ] && curl $path -d '{"jsonrpc":"2.0","method":"aria2.changeGlobalOption","id":"cron","params":["token:'$passwd'",{"bt-tracker":"'$tracker'"}]}'

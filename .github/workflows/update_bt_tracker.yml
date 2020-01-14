@@ -20,4 +20,5 @@ jobs:
           passwd=${server[1]}
           tracker_url='https://github.com/ngosang/trackerslist/raw/master/trackers_best.txt'
           tracker=$(echo -n  $(curl -s -L $tracker_url | sed 'N;s/\n//g') | tr ' ' ',')
-          [ -n "$tracker" ] && curl $path -d '{"jsonrpc":"2.0","method":"aria2.changeGlobalOption","id":"cron","params":["token:'$passwd'",{"bt-tracker":"'$tracker'"}]}'
+          postdata='{"jsonrpc":"2.0","method":"aria2.changeGlobalOption","id":"cron","params":["token:'$passwd'",{"bt-tracker":"'$tracker'"}]}'
+          [ -n "$tracker" ] && curl -s $path -d $postdata
